@@ -28,16 +28,6 @@ export default function Home() {
 
     return (
         <div className="h-screen flex flex-col m-0 p-0">
-            {/*<header className="text-white py-2 px-6 flex items-center justify-start">*/}
-            {/*    <button*/}
-            {/*        onClick={toggleSidebar}*/}
-            {/*        className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"*/}
-            {/*    >*/}
-            {/*        {isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}*/}
-            {/*    </button>*/}
-            {/*</header>*/}
-
-            {/* Main Content */}
             <div className="flex flex-1">
                 {/* Sidebar */}
                 {isSidebarOpen && (
