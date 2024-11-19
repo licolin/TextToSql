@@ -3,13 +3,15 @@
 import React, {useState} from 'react';
 import ChatGPTIcon from "@/app/component/icons";
 import {MdOutlineAddBox} from "react-icons/md";
-import { MdListAlt } from "react-icons/md";
+import {MdListAlt} from "react-icons/md";
+import Dropdown from '@/app/component/Dropdown';
 
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
     };
 
     const chatData = [
@@ -33,7 +35,8 @@ export default function Home() {
                 {isSidebarOpen && (
                     <aside className="w-1/6 p-2 transition-all duration-300">
                         <div className="flex justify-between">
-                            <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md" onClick={()=>setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
+                            <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"
+                                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
                         </div>
                         <nav>
@@ -63,14 +66,21 @@ export default function Home() {
                         isSidebarOpen ? "ml-0" : "w-full"
                     }`}
                 >
+                    {isSidebarOpen &&
+                        <div className={`relative inline-block text-left ${isSidebarOpen ? "ml-4 pt-2" : ""}`}>
+                            <Dropdown options={['Option A', 'Option B', 'Option C']}></Dropdown>
+                        </div>}
+
                     {!isSidebarOpen && (
-                        <div className="flex justify-between w-10 p-2">
-                            <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md" onClick={()=>setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
+                        <div className="flex justify-between w-20 p-2">
+                            <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"
+                                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
+                            <div> <Dropdown options={['Option A', 'Option B', 'Option C']}/> </div>
                         </div>
                     )
                     }
-                    <div className={`max-w-7xl mx-auto flex flex-col space-y-4 ${isSidebarOpen? "mt-10":"" }`}>
+                    <div className={`max-w-7xl mx-auto flex flex-col space-y-4 ${isSidebarOpen ? "mt-10" : ""}`}>
                         {chatData.map((message) => (
                             <div
                                 key={message.id}
