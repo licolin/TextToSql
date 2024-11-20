@@ -44,7 +44,7 @@ export default function Dropdown({ options, selectedOption, setSelectedOption }:
                         {options.map((option, index) => (
                             <li key={index} onClick={() => {
                                 setSelectedOption(option);
-                                setIsOpen(false); // Close the dropdown after selection
+                                setIsOpen(false);
                             }}>
                                 <a
                                     href="#"
