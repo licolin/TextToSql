@@ -1,6 +1,6 @@
 "use client";
 // import Image from "next/image";
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import ChatGPTIcon from "@/app/component/icons";
 import {MdOutlineAddBox} from "react-icons/md";
 import {MdListAlt} from "react-icons/md";
@@ -9,9 +9,24 @@ import Dropdown from '@/app/component/Dropdown';
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
+    const [input, setInput] = useState<string>('');
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [selectedOption, setSelectedOption] = useState<string>("ChatGPT");
+
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInput(e.target.value);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            // sendMessage();
+        }
     };
 
     const chatData = [
@@ -68,7 +83,11 @@ export default function Home() {
                 >
                     {isSidebarOpen &&
                         <div className={`relative inline-block text-left ${isSidebarOpen ? "ml-4 pt-2" : ""}`}>
-                            <Dropdown options={['Option A', 'Option B', 'Option C']}></Dropdown>
+                            <Dropdown
+                                options={['OptionA', 'OptionB', 'OptionC']}
+                                selectedOption={selectedOption}
+                                setSelectedOption={setSelectedOption}
+                            />
                         </div>}
 
                     {!isSidebarOpen && (
@@ -76,7 +95,11 @@ export default function Home() {
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"
                                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
-                            <div> <Dropdown options={['Option A', 'Option B', 'Option C']}/> </div>
+                            <div> <Dropdown
+                                options={['OptionA', 'OptionB', 'OptionC']}
+                                selectedOption={selectedOption}
+                                setSelectedOption={setSelectedOption}
+                            /></div>
                         </div>
                     )
                     }
@@ -106,6 +129,28 @@ export default function Home() {
 
                             </div>
                         ))}
+                        <div className="fixed bottom-0 w-4/5 pb-4 border-0">
+                            <div className="flex items-center max-w-4xl mx-auto w-full">
+                                <textarea
+                                    ref={textareaRef}
+                                    value={input}
+                                    onChange={handleInputChange}
+                                    rows={2}
+                                    className="w-full py-2 px-2 border-none outline-none overflow-hidden shadow-lg rounded-full"
+                                    placeholder="输入提示词 ..."
+                                    onKeyDown={handleKeyDown}
+                                />
+                                <button
+                                    // onClick={sendMessage}
+                                    disabled={!input.trim()}
+                                    className={`ml-2 p-1 w-10 rounded text-sm ${input.trim() ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
+                                >
+                                    发送
+                                </button>
+                            </div>
+                        </div>
+
+
                     </div>
                 </main>
             </div>
