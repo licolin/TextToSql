@@ -5,6 +5,7 @@ import ChatGPTIcon from "@/app/component/icons";
 import {MdOutlineAddBox} from "react-icons/md";
 import {MdListAlt} from "react-icons/md";
 import Dropdown from '@/app/component/Dropdown';
+import { BsArrowUpCircle } from "react-icons/bs";
 
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -42,6 +43,8 @@ export default function Home() {
             content: " Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework..."
         },
     ];
+
+    const isMultiLine = input.split('\n').length > 1;
 
     return (
         <div className="h-screen flex flex-col m-0 p-0">
@@ -130,23 +133,27 @@ export default function Home() {
                             </div>
                         ))}
                         <div className="fixed bottom-0 w-4/5 pb-4 border-0">
-                            <div className="flex items-center max-w-4xl mx-auto w-full">
-                                <textarea
-                                    ref={textareaRef}
-                                    value={input}
-                                    onChange={handleInputChange}
-                                    rows={2}
-                                    className="w-full py-2 px-2 border-none outline-none overflow-hidden shadow-lg rounded-full"
-                                    placeholder="输入提示词 ..."
-                                    onKeyDown={handleKeyDown}
-                                />
-                                <button
-                                    // onClick={sendMessage}
-                                    disabled={!input.trim()}
-                                    className={`ml-2 p-1 w-10 rounded text-sm ${input.trim() ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 cursor-not-allowed'}`}
-                                >
-                                    发送
-                                </button>
+                            <div className="fixed bottom-0 w-4/5 left-1/5 pb-4 border-0">
+                                <div className="relative items-center max-w-4xl mx-auto ">  {/* 添加相对定位容器 */}
+                                    <textarea
+                                        ref={textareaRef}
+                                        value={input}
+                                        onChange={handleInputChange}
+                                        rows={3}
+                                        className={`w-full  py-4 mr-10 pl-5 max-h-40  overflow-auto shadow-lg outline-blue-500 resize-none rounded-3xl rounded-br-lg`}
+                                        placeholder="输入提示词 ..."
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    <BsArrowUpCircle
+                                        // onClick={sendMessage}
+                                        className={`absolute right-[6px] bottom-0 transform -translate-y-1/2 cursor-pointer ${
+                                            input.trim() ? 'text-gray-700 hover:text-gray-800' : 'text-gray-400 cursor-not-allowed'
+                                        }`}
+                                        size={22}
+                                    />
+                                </div>
+
+
                             </div>
                         </div>
 
