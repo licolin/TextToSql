@@ -6,6 +6,7 @@ import {MdOutlineAddBox} from "react-icons/md";
 import {MdListAlt} from "react-icons/md";
 import Dropdown from '@/app/component/Dropdown';
 import { BsArrowUpCircle } from "react-icons/bs";
+import {dropdownOptions_for_models} from "@/app/component/configs";
 
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -87,7 +88,7 @@ export default function Home() {
                     {isSidebarOpen &&
                         <div className={`relative inline-block text-left ${isSidebarOpen ? "ml-4 pt-2" : ""}`}>
                             <Dropdown
-                                options={['OptionA', 'OptionB', 'OptionC']}
+                                options={dropdownOptions_for_models}
                                 selectedOption={selectedOption}
                                 setSelectedOption={setSelectedOption}
                             />
@@ -99,7 +100,7 @@ export default function Home() {
                                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
                             <div> <Dropdown
-                                options={['OptionA', 'OptionB', 'OptionC']}
+                                options={dropdownOptions_for_models}
                                 selectedOption={selectedOption}
                                 setSelectedOption={setSelectedOption}
                             /></div>
@@ -133,7 +134,7 @@ export default function Home() {
                             </div>
                         ))}
                         <div className="fixed bottom-0 w-4/5 pb-4 border-0">
-                            <div className="fixed bottom-0 w-4/5 left-1/5 pb-4 border-0">
+                            <div className="fixed bottom-0 w-4/5 left-1/8 pb-4 border-0">
                                 <div className="relative items-center max-w-4xl mx-auto ">  {/* 添加相对定位容器 */}
                                     <textarea
                                         ref={textareaRef}

@@ -1,0 +1,1 @@
+export const dropdownOptions_for_models = ['qwen', 'sqlcoder'];
