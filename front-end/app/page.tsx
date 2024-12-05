@@ -13,7 +13,7 @@ export default function Home() {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState<string>('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const [selectedOption, setSelectedOption] = useState<string>("ChatGPT");
+    const [selectedOption, setSelectedOption] = useState<string>(dropdownOptions_for_models[0]);
 
 
     const toggleDropdown = () => {
