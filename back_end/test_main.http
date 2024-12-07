@@ -1,11 +1,11 @@
 # Test your FastAPI endpoints
 
-GET http://127.0.0.1:8000/
-Accept: application/json
+### Send POST request with json body
+POST http://127.0.0.1:8000/ask_question
+Content-Type: application/json
 
-###
+{
+  "question": "python 装饰器",
+  "model": "Qwen/Qwen2.5-Coder-32B-Instruct"
+}
 
-GET http://127.0.0.1:8000/hello/User
-Accept: application/json
-
-###

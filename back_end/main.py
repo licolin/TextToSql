@@ -68,7 +68,7 @@ async def change_model_params(config_request: ModelConfigRequest, llm: HuggingFa
 async def ask_question(model_request: QueryRequest, llm: HuggingFaceEndpoint = Depends(get_llm)):
     try:
         # Use the invoke method for the model query
-        response = llm.invoke({"inputs": model_request.question})
+        response = llm.invoke(model_request.question)
         return {"response": response}
     except Exception as e:
         logger.error(f"Error during model inference: {e}")
