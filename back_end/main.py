@@ -5,6 +5,7 @@ import os
 from langchain_huggingface import HuggingFaceEndpoint
 from loguru import logger
 from typing import Optional
+from config import model_dict
 
 load_dotenv()
 
@@ -18,10 +19,12 @@ llm_kwargs = {"temperature": 0.7, "max_length": 512}
 
 
 # Function to instantiate the model dynamically
-def get_llm(model: Optional[str] = None) -> HuggingFaceEndpoint:
-    model_to_use = model or model_name
+def get_llm(model: Optional[str] = None) -> HuggingFaceEndpoint | None:
+    if model not in model_dict:
+        logger.error(f"{model} do no exist in model_dict")
+        return None
     return HuggingFaceEndpoint(
-        repo_id=model_to_use,
+        repo_id=model_dict[model],
         huggingfacehub_api_token=huggingface_api_key,
         temperature=llm_kwargs["temperature"],
         max_new_tokens=10240
@@ -65,9 +68,11 @@ async def change_model_params(config_request: ModelConfigRequest, llm: HuggingFa
 
 # Endpoint to ask questions
 @app.post("/ask_question")
-async def ask_question(model_request: QueryRequest, llm: HuggingFaceEndpoint = Depends(get_llm)):
+async def ask_question(model_request: QueryRequest):
     try:
-        # Use the invoke method for the model query
+        llm = get_llm(model_request.model)
+        if not llm:
+            return {"message": "No model change requested"}
         response = llm.invoke(model_request.question)
         return {"response": response}
     except Exception as e:

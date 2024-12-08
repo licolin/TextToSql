@@ -1,24 +1,33 @@
 "use client";
 // import Image from "next/image";
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import ChatGPTIcon from "@/app/component/icons";
 import {MdOutlineAddBox} from "react-icons/md";
 import {MdListAlt} from "react-icons/md";
 import Dropdown from '@/app/component/Dropdown';
-import { BsArrowUpCircle } from "react-icons/bs";
+import {BsArrowUpCircle} from "react-icons/bs";
 import {dropdownOptions_for_models} from "@/app/component/configs";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isOpen, setIsOpen] = useState(false);
+    // const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState<string>('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [selectedOption, setSelectedOption] = useState<string>(dropdownOptions_for_models[0]);
+    const [chatData, setChatData] = useState(() => {
+        const storedChatData = localStorage.getItem("chatData");
+        return storedChatData ? JSON.parse(storedChatData) : [
+            {id: 1, type: "assistant", content: "Hello! How can I assist you today?"},
+        ];
+    });
+
+    localStorage.removeItem("chatData");
 
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
+    useEffect(() => {
+        localStorage.setItem("chatData", JSON.stringify(chatData));
+    }, [chatData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInput(e.target.value);
@@ -27,24 +36,58 @@ export default function Home() {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            // sendMessage();
+            sendMessage().then(() => console.log("send message!"));
         }
     };
 
-    const chatData = [
-        {id: 1, type: "assitant", content: "Hello! How can I assist you today?"},
-        {
-            id: 2,
-            type: "user",
-            content: "Can you explain how Next.js works?Can you explain how Next.js works?Can you explain how Next.js works?Can you explain how Next.js works?Can you explain how Next.js works?"
-        },
-        {
-            id: 3,
-            type: "assitant",
-            content: " Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework...Sure! Next.js is a React framework..."
-        },
-    ];
 
+    const sendMessage = async () => {
+        if (!input.trim()) return;
+
+        const userMessage = {
+            id: uuidv4(),
+            type: "user",
+            content: input.trim(),
+        };
+
+        setChatData((prev) => [...prev, userMessage]);
+        setInput(""); // Clear input
+
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    question: input.trim(), // User input question
+                    model: selectedOption,              // Model name
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch the response from LLM.");
+            }
+
+            const data = await response.json();
+            const assistantMessage = {
+                id: uuidv4(),
+                type: "assistant",
+                content: data.reply || "No response received",
+            };
+
+            setChatData((prev) => [...prev, assistantMessage]);
+        } catch (error) {
+            console.error("Error sending message:", error);
+            const errorMessage = {
+                id: uuidv4(),
+                type: "assistant",
+                content: "Error fetching response from the server.",
+            };
+            setChatData((prev) => [...prev, errorMessage]);
+        }
+    };
+    console.log("chatData "+JSON.stringify(chatData));
     const isMultiLine = input.split('\n').length > 1;
 
     return (
@@ -99,7 +142,7 @@ export default function Home() {
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"
                                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
-                            <div> <Dropdown
+                            <div><Dropdown
                                 options={dropdownOptions_for_models}
                                 selectedOption={selectedOption}
                                 setSelectedOption={setSelectedOption}
@@ -115,7 +158,7 @@ export default function Home() {
                                     message.type === "user" ? "justify-end" : "justify-start"
                                 }`}
                             >
-                                {message.type === "assitant" && (
+                                {message.type === "assistant" && (
                                     <div className="flex-shrink-0 mr-4 overflow-visible">
                                         <ChatGPTIcon/>
                                     </div>
@@ -146,7 +189,7 @@ export default function Home() {
                                         onKeyDown={handleKeyDown}
                                     />
                                     <BsArrowUpCircle
-                                        // onClick={sendMessage}
+                                        onClick={sendMessage}
                                         className={`absolute right-[6px] bottom-0 transform -translate-y-1/2 cursor-pointer ${
                                             input.trim() ? 'text-gray-700 hover:text-gray-800' : 'text-gray-400 cursor-not-allowed'
                                         }`}
