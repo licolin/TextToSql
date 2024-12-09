@@ -1,5 +1,4 @@
 "use client";
-// import Image from "next/image";
 import React, {useEffect, useRef, useState} from 'react';
 import ChatGPTIcon from "@/app/component/icons";
 import {MdOutlineAddBox} from "react-icons/md";
@@ -20,6 +19,7 @@ export default function Home() {
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const [selectedOption, setSelectedOption] = useState<string>(dropdownOptions_for_models[0]);
+    const [currentTitle,setCurrentTitle] = useState("");
     const [chatData, setChatData] = useState(() => {
         const storedChatData = localStorage.getItem("chatData");
         return storedChatData ? JSON.parse(storedChatData) : [
