@@ -9,11 +9,16 @@ import {BsArrowUpCircle} from "react-icons/bs";
 import {dropdownOptions_for_models} from "@/app/component/configs";
 import { v4 as uuidv4 } from 'uuid';
 
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     // const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState<string>('');
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
     const [selectedOption, setSelectedOption] = useState<string>(dropdownOptions_for_models[0]);
     const [chatData, setChatData] = useState(() => {
         const storedChatData = localStorage.getItem("chatData");
@@ -22,7 +27,7 @@ export default function Home() {
         ];
     });
 
-    localStorage.removeItem("chatData");
+    // localStorage.removeItem("chatData");
 
 
     useEffect(() => {
@@ -76,6 +81,8 @@ export default function Home() {
                 content: data.reply || "No response received",
             };
 
+            console.log("info "+JSON.stringify(data.reply));
+
             setChatData((prev) => [...prev, assistantMessage]);
         } catch (error) {
             console.error("Error sending message:", error);
@@ -88,14 +95,14 @@ export default function Home() {
         }
     };
     console.log("chatData "+JSON.stringify(chatData));
-    const isMultiLine = input.split('\n').length > 1;
+    // const isMultiLine = input.split('\n').length > 1;
 
     return (
         <div className="h-screen flex flex-col m-0 p-0">
-            <div className="flex flex-1">
+            <div className="flex h-full">
                 {/* Sidebar */}
                 {isSidebarOpen && (
-                    <aside className="w-1/6 p-2 transition-all duration-300">
+                    <aside className="w-1/6 p-2 h-screen flex-shrink-0 transition-all duration-300">
                         <div className="flex justify-between">
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"
                                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}><MdListAlt size={20}/></div>
@@ -124,7 +131,7 @@ export default function Home() {
                 )}
 
                 <main
-                    className={`flex-1 bg-gray-50 transition-all duration-300 ${
+                    className={`flex-1 bg-gray-50 transition-all overflow-y-auto duration-300 ${
                         isSidebarOpen ? "ml-0" : "w-full"
                     }`}
                 >
@@ -171,7 +178,31 @@ export default function Home() {
                                             : "bg-gray-200 text-gray-900 w-full"
                                     }`}
                                 >
-                                    {message.content}
+                                    {/*{message.content}*/}
+                                    <ReactMarkdown
+                                        components={{
+                                            code({inline, className, children, ...props }) {
+                                                const match = /language-(\w+)/.exec(className || "");
+                                                return !inline && match ? (
+                                                    <SyntaxHighlighter
+                                                        style={oneDark}
+                                                        language={match[1]}
+                                                        PreTag="div"
+                                                        {...props}
+                                                    >
+                                                        {String(children).replace(/\n$/, "")}
+                                                    </SyntaxHighlighter>
+                                                ) : (
+                                                    <code className={className} {...props}>
+                                                        {children}
+                                                    </code>
+                                                );
+                                            },
+                                        }}
+                                    >
+                                        {message.content}
+                                    </ReactMarkdown>
+
                                 </div>
 
                             </div>
