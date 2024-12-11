@@ -18,7 +18,6 @@ model_name = os.getenv("MODEL_NAME")
 llm_kwargs = {"temperature": 0.7, "max_length": 512}
 
 
-# Function to instantiate the model dynamically
 def get_llm(model: Optional[str] = None) -> HuggingFaceEndpoint | None:
     if model not in model_dict:
         logger.error(f"{model} do no exist in model_dict")
@@ -66,7 +65,6 @@ async def change_model_params(config_request: ModelConfigRequest, llm: HuggingFa
     return {"message": "Model parameters updated"}
 
 
-# Endpoint to ask questions
 @app.post("/ask_question")
 async def ask_question(model_request: QueryRequest):
     try:
