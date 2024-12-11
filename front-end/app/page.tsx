@@ -131,7 +131,7 @@ export default function Home() {
                 )}
 
                 <main
-                    className={`flex-1 bg-gray-50 transition-all overflow-y-auto duration-300 mr-3 ${
+                    className={`flex-1 bg-gray-50 transition-all overflow-y-auto duration-300 mr-3 pb-[100px] ${
                         isSidebarOpen ? "ml-0" : "w-full"
                     }`}
                 >
