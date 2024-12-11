@@ -131,7 +131,7 @@ export default function Home() {
                 )}
 
                 <main
-                    className={`flex-1 bg-gray-50 transition-all overflow-y-auto duration-300 ${
+                    className={`flex-1 bg-gray-50 transition-all overflow-y-auto duration-300 mr-3 ${
                         isSidebarOpen ? "ml-0" : "w-full"
                     }`}
                 >
@@ -166,7 +166,7 @@ export default function Home() {
                                 }`}
                             >
                                 {message.type === "assistant" && (
-                                    <div className="flex-shrink-0 mr-4 overflow-visible">
+                                    <div className="flex-shrink-0 mx-3 overflow-visible">
                                         <ChatGPTIcon/>
                                     </div>
                                 )}
