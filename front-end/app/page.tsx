@@ -6,11 +6,18 @@ import {MdListAlt} from "react-icons/md";
 import Dropdown from '@/app/component/Dropdown';
 import {BsArrowUpCircle} from "react-icons/bs";
 import {dropdownOptions_for_models} from "@/app/component/configs";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
+import {oneDark} from "react-syntax-highlighter/dist/esm/styles/prism";
+
+interface Message {
+    id: string;
+    type: string;
+    content: string;
+    title: string;
+}
 
 export default function Home() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -19,16 +26,18 @@ export default function Home() {
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
     const [selectedOption, setSelectedOption] = useState<string>(dropdownOptions_for_models[0]);
-    const [currentTitle,setCurrentTitle] = useState("");
+    const [currentTitle, setCurrentTitle] = useState("");
+    const [titleList, setTitleList] = useState([]);
     const [chatData, setChatData] = useState(() => {
         const storedChatData = localStorage.getItem("chatData");
-        return storedChatData ? JSON.parse(storedChatData) : [
-            {id: 1, type: "assistant", content: "Hello! How can I assist you today?"},
-        ];
+        const ret: Message[] = storedChatData ? JSON.parse(storedChatData) : []
+        if (ret.length) {
+            const titles = [...new Set(ret.map(item => item.title))];
+            setCurrentTitle(titles[0]);
+            setTitleList(titles);
+        }
+        return ret;
     });
-
-    // localStorage.removeItem("chatData");
-
 
     useEffect(() => {
         localStorage.setItem("chatData", JSON.stringify(chatData));
@@ -45,7 +54,6 @@ export default function Home() {
         }
     };
 
-
     const sendMessage = async () => {
         if (!input.trim()) return;
 
@@ -53,10 +61,15 @@ export default function Home() {
             id: uuidv4(),
             type: "user",
             content: input.trim(),
+            title: "",
         };
 
         setChatData((prev) => [...prev, userMessage]);
-        setInput(""); // Clear input
+        setInput("");
+        if (!currentTitle) {
+            setCurrentTitle(input.trim());
+            setTitleList((prev)=>[...prev,input.trim()])
+        }
 
         try {
             const response = await fetch("/api/chat", {
@@ -79,9 +92,10 @@ export default function Home() {
                 id: uuidv4(),
                 type: "assistant",
                 content: data.reply || "No response received",
+                title: currentTitle,
             };
 
-            console.log("info "+JSON.stringify(data.reply));
+            console.log("info " + JSON.stringify(data.reply));
 
             setChatData((prev) => [...prev, assistantMessage]);
         } catch (error) {
@@ -90,11 +104,12 @@ export default function Home() {
                 id: uuidv4(),
                 type: "assistant",
                 content: "Error fetching response from the server.",
+                title: currentTitle,
             };
             setChatData((prev) => [...prev, errorMessage]);
         }
     };
-    console.log("chatData "+JSON.stringify(chatData));
+    console.log("chatData " + JSON.stringify(chatData));
     // const isMultiLine = input.split('\n').length > 1;
 
     return (
@@ -109,23 +124,13 @@ export default function Home() {
                             <div className="hover:bg-gray-300 p-[2px] m-0 rounded-md"><MdOutlineAddBox size={20}/></div>
                         </div>
                         <nav>
-                            <ul>
-                                <li className="mb-2">
-                                    <a href="#" className="text-blue-500">
-                                        Link 1
-                                    </a>
-                                </li>
-                                <li className="mb-2">
-                                    <a href="#" className="text-blue-500">
-                                        Link 2
-                                    </a>
-                                </li>
-                                <li className="mb-2">
-                                    <a href="#" className="text-blue-500">
-                                        Link 3
-                                    </a>
-                                </li>
-                            </ul>
+                            {titleList.length && (
+                                <div className="mt-2">
+                                    {titleList.map((title, index) => (
+                                        <div key={index} className="mx-2 my-[2px] px-2 py-[2px] cursor-pointer bg-blue-200 hover:bg-blue-500 rounded-md">{title}</div>
+                                    ))}
+                                </div>
+                            )}
                         </nav>
                     </aside>
                 )}
@@ -181,7 +186,7 @@ export default function Home() {
                                     {/*{message.content}*/}
                                     <ReactMarkdown
                                         components={{
-                                            code({inline, className, children, ...props }) {
+                                            code({inline, className, children, ...props}) {
                                                 const match = /language-(\w+)/.exec(className || "");
                                                 return !inline && match ? (
                                                     <SyntaxHighlighter
